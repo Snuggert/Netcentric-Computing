@@ -12,7 +12,6 @@ Serial pc(USBTX, USBRX);
 int main() {
     float speed;
     char buf[256];
-
     hbridge.power(true);
     while (1){
         led1 = (ain > 0.2) ? 1 : 0;
@@ -29,11 +28,8 @@ int main() {
         }
         hbridge.speed(speed);
 
-
-        if (pc.readable()){
-            led4 = 1;
-            pc.putc(pc.getc() + 1);
+        if (pc.writeable()){
+            pc.printf("Serial serial serial killah\n\r");
         }
-        led4 = 0;
     }
 }
