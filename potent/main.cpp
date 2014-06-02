@@ -13,8 +13,6 @@ int main() {
     float speed;
     char buf[256];
 
-    sp.baud(19200);
-
     hbridge.power(true);
     while (1){
         led1 = (ain > 0.2) ? 1 : 0;
@@ -31,13 +29,11 @@ int main() {
         }
         hbridge.speed(speed);
 
-        pc.printf("Serial serial serial killah\n");
-        /*
+
         if (pc.readable()){
             led4 = 1;
-            pc.gets(buf, 256);
-            pc.printf("Received: %s\n", buf);
+            pc.putc(pc.getc() + 1);
         }
-        */
+        led4 = 0;
     }
 }
