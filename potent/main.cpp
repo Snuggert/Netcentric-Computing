@@ -29,7 +29,10 @@ int main() {
         }
         hbridge.speed(speed);
 
-        pc.gets(buf, 256);
-        pc.printf("Received: %s\n", buf);
+        if (pc.readable()){
+            led4 = 1;
+            pc.gets(buf, 256);
+            pc.printf("Received: %s\n", buf);
+        }
     }
 }
