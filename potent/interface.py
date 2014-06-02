@@ -4,10 +4,10 @@ import serial
 def main():
     serdev = '/dev/ttyACM0'
     s = serial.Serial(serdev)
-    s.write("hello")
     while(1):
+        s.write(raw_input("Stand?:"))
         try:
-            print s.readline()
+            print("Stand:", s.read())
         except Exception, e:
             raise
     s.close()
