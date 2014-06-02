@@ -7,9 +7,12 @@ DigitalOut led2(LED2);
 DigitalOut led3(LED3);
 DigitalOut led4(LED4);
 AnalogIn ain(p17);
+Serial pc(USBTX, USBRX);
 
 int main() {
     float speed;
+    char buf[256];
+
     hbridge.power(true);
     while (1){
         led1 = (ain > 0.2) ? 1 : 0;
@@ -25,5 +28,8 @@ int main() {
             speed = 0.0;
         }
         hbridge.speed(speed);
+
+        pc.gets(buf, 256);
+        pc.printf("Received: %s\n", buf);
     }
 }
