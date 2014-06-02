@@ -29,10 +29,13 @@ int main() {
         }
         hbridge.speed(speed);
 
+        pc.printf("Serial serial serial killah\n");
+        /*
         if (pc.readable()){
             led4 = 1;
             pc.gets(buf, 256);
             pc.printf("Received: %s\n", buf);
         }
+        */
     }
 }
