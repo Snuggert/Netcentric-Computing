@@ -13,6 +13,8 @@ int main() {
     float speed;
     char buf[256];
 
+    sp.baud(19200);
+
     hbridge.power(true);
     while (1){
         led1 = (ain > 0.2) ? 1 : 0;
