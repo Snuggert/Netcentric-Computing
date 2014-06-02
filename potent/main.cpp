@@ -28,8 +28,6 @@ int main() {
         }
         hbridge.speed(speed);
 
-        if (pc.writeable()){
-            pc.printf("Serial serial serial killah\n\r");
-        }
+        pc.putc(pc.getc() + 1);
     }
 }
