@@ -7,7 +7,7 @@ def main():
     while(1):
         s.write(raw_input("Stand?:"))
         try:
-            print("Stand:", s.read())
+            print("Stand:", s.readline())
         except Exception, e:
             raise
     s.close()
