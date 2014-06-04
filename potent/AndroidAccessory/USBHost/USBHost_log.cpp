@@ -1,6 +1,8 @@
 
 /*
 Copyright (c) 2010 Peter Barrett
+Modified for use with gcc by Robin de Vries and Ilja Kamps (2013) for
+The University of Amsterdam Netcentric Computing Course
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -933,11 +935,14 @@ public:
 //====================================================================================
 //====================================================================================
 //      Host controller instance and Interrupt handler
+//      Modified for gcc, replaced __attribute__((at(USB_RAM_BASE))) with pointer to
+//      the structure and changed the structs to pointers to it (Ilja Kamps 2013),
+//      changed interrupt handling to gcc style (Robin de Vries 2013)
 
-static HostController _controller __attribute__((at(USB_RAM_BASE)));
+static HostController *_controller =  (HostController *) USB_RAM_BASE;
 
-extern "C" void USB_IRQHandler(void) __irq;
-void USB_IRQHandler (void) __irq
+extern "C" void USB_IRQHandler(void) __attribute__((interrupt("IRQ")));
+void USB_IRQHandler (void)
 {
 LOG("USB_IRQHandler start \r\n");
     u32 int_status = LPC_USB->HcInterruptStatus;
@@ -974,21 +979,21 @@ LOG("USB_IRQHandler start \r\n");
 
     if (int_status & RootHubStatusChange)    //    Root hub status change
     {
-      LOG("USB_IRQHandler _rootHubStatusChange %0x->%0x \r\n", _controller._rootHubStatusChange, _controller._rootHubStatusChange+1);
-        _controller._rootHubStatusChange++;    //    Just flag the controller, will be processed in USBLoop
+      LOG("USB_IRQHandler _rootHubStatusChange %0x->%0x \r\n", _controller->_rootHubStatusChange, _controller->_rootHubStatusChange+1);
+        _controller->_rootHubStatusChange++;    //    Just flag the controller, will be processed in USBLoop
     }
 
     u32 head = 0;
     if (int_status & WritebackDoneHead)
     {
-        head = _controller.CommunicationArea.DoneHead;        // Writeback Done
-        _controller.CommunicationArea.DoneHead = 0;
+        head = _controller->CommunicationArea.DoneHead;        // Writeback Done
+        _controller->CommunicationArea.DoneHead = 0;
          LOG("USB_IRQHandler head=%0x\r\n",head);
     }             
     LPC_USB->HcInterruptStatus = int_status;
 
     if (head)
-       _controller.ProcessDoneQueue(head);     // TODO - low bit can be set BUGBUG
+       _controller->ProcessDoneQueue(head);     // TODO - low bit can be set BUGBUG
 LOG("USB_IRQHandler end \r\n");
 }
 
@@ -998,28 +1003,28 @@ LOG("USB_IRQHandler end \r\n");
 
 void USBInit()
 {
-    return _controller.Init();
+    return _controller->Init();
 }
 
 void USBLoop()
 {
-    return _controller.Loop();
+    return _controller->Loop();
 }
 
 u8* USBGetBuffer(u32* len)
 {
     *len = USB_RAM_SIZE - sizeof(HostController);
-    return _controller.SRAM;
+    return _controller->SRAM;
 }
 
 static Setup* GetSetup(int device)
 {
     if (device == 0)
-        return &_controller._setupZero;
+        return &(_controller->_setupZero);
     
     if (device < 1 || device > MAX_DEVICES)
         return 0;
-    return &_controller.Devices[device-1].SetupBuffer;
+    return &(_controller->Devices[device-1].SetupBuffer);
 }
 
 //    Loop until IO on endpoint is complete
@@ -1044,7 +1049,7 @@ static int WaitIODone(Endpoint* endpoint)
 int USBTransfer(int device, int ep, u8 flags, u8* data, int length, USBCallback callback, void* userData)
 {
    //LOG("USBTRANSFER start\r\n");
-    Endpoint* endpoint = _controller.GetEndpoint(device,ep);
+    Endpoint* endpoint = _controller->GetEndpoint(device,ep);
     if (!endpoint)
     {
         LOG("USBTRANSFER error Endpoint not found!!\r\n");
@@ -1062,12 +1067,12 @@ int USBTransfer(int device, int ep, u8 flags, u8* data, int length, USBCallback 
     if (ep == 0)
     {
       LOG("USBTRANSFER ep == 0(Setup) ------------------------------\r\n");
-        _controller.Transfer(endpoint,TOKEN_SETUP,(u8*)GetSetup(device),8,Endpoint::SetupQueued);
+        _controller->Transfer(endpoint,TOKEN_SETUP,(u8*)GetSetup(device),8,Endpoint::SetupQueued);
     }
     else
     {
       LOG("USBTRANSFER ep != 0\r\n");
-        _controller.Transfer(endpoint,flags & 0x80 ? TOKEN_IN : TOKEN_OUT,data,length,Endpoint::DataQueued);
+        _controller->Transfer(endpoint,flags & 0x80 ? TOKEN_IN : TOKEN_OUT,data,length,Endpoint::DataQueued);
     }
     if (callback)
     {
@@ -1085,7 +1090,7 @@ int USBControlTransfer(int device, int request_type, int request, int value, int
         return ERR_DEVICE_NOT_FOUND;
         
     // Async control calls may overwrite setup buffer of previous call, so we need to wait before setting up next call
-    WaitIODone(_controller.GetEndpoint(device,0));
+    WaitIODone(_controller->GetEndpoint(device,0));
     
     setup->bm_request_type = request_type;
     setup->b_request = request;
@@ -1158,7 +1163,7 @@ int ClearPortFeature(int device, int feature, int index)
 int SetPortPower(int device, int port)
 {
     int r = SetPortFeature(device,PORT_POWER,port);
-    _controller.DelayMS(20);    // 80ms to turn on a hubs power... DESCRIPTOR? todo
+    _controller->DelayMS(20);    // 80ms to turn on a hubs power... DESCRIPTOR? todo
     return r;
 }
 

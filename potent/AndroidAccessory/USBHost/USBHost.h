@@ -26,7 +26,7 @@ THE SOFTWARE.
 #define USBHOST_H
 
 //log mode on off
-//#define USBHOST_LOG
+#define USBHOST_LOG
 
 
 #ifndef u8
