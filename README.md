@@ -1,4 +1,9 @@
-         _____
+Directories:
+- android_app:  Given framework, android part.
+- mbed_communication:   Given framework, mbed part.
+- potent:   Own mbed software.
+
+_____
      _-~~     ~~-_//
    /~             ~\
   |              _  |_
