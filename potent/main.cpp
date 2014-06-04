@@ -4,33 +4,23 @@
 #include <string>
 
 HBridge hbridge(p18,p15,p22);
-DigitalOut led1(LED1);
-DigitalOut led2(LED2);
-DigitalOut led3(LED3);
-DigitalOut led4(LED4);
+PwmOut led1(LED1);
+PwmOut led2(LED2);
+PwmOut led3(LED3);
+PwmOut led4(LED4);
 AnalogIn ain(p17);
 Serial pc(USBTX, USBRX);
-
-struct led_wrapper {
-    DigitalOut *led;
-    int waits;
-};
 
 int main() {
     float speed;
     int pos = 5;
     int command_active = 1;
     int end_reached_counter = 0;
-    int half_led = 12;
     int buf_pos = 0;
     char buf[256];
     char *pend;
 
-    led_wrapper leds[4] = {0};
-    leds[0].led = &led1;
-    leds[1].led = &led2;
-    leds[2].led = &led3;
-    leds[3].led = &led4;
+    PwmOut *leds[4] = {&led1, &led2, &led3, &led4};
 
     float voltages[11] = {0.0, 0.008, 0.0325, 0.0975, 0.163, 0.2315, 0.3066,
          0.4529, 0.7941, 0.999, 1.1};
@@ -48,19 +38,11 @@ int main() {
 
         for (int i = 0; i < 4; i++) {
             if (current_pos/2 - i > 0) {
-                *leds[i].led = 1;
+                *leds[i] = 1;
             } else if (current_pos/2.0 - i == 0.5) {
-                if (leds[i].waits < half_led) {
-                    leds[i].waits++;
-                    *leds[i].led = 0;
-
-                } else {
-                    leds[i].waits = 0;
-                    *leds[i].led = 1;
-                }
-
+                *leds[i] = 0.1;
             } else {
-                *leds[i].led = 0;
+                *leds[i] = 0;
             }
         }
 
