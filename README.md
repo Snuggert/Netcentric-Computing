@@ -1,6 +1,6 @@
 Directories:
-- android_app:  Given framework, android part.
-- mbed_communication:   Given framework, mbed part.
+- android_app:  Given framework, android part. (Think it's good to build further on this one)
+- mbed_communication:   Given framework, mbed part. (We have to combine this one with potent)
 - potent:   Own mbed software.
 
 _____

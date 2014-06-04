@@ -33,7 +33,7 @@ AndroidAccessory::AndroidAccessory(int rbuffsize,int wbuffsize,
 
     u32 len;
     u8* p=USBGetBuffer(&len);
-    if (len<(rbuffsize+wbuffsize+255)) {
+    if (((int) len)<(rbuffsize+wbuffsize+255)) {
         error("buff size too big.please resize max=%d. currentSize=%d\r\n",len,(rbuffsize+wbuffsize+255));
     }
 
@@ -177,7 +177,7 @@ void AndroidAccessory::init(int device, int configuration, int interfaceNumber) 
 
 bool AndroidAccessory::switchDevice(int device) {
 
-    if (1==getProtocol(device)) {
+    if (1<=getProtocol(device)) {
         log("device supports protocol 1\r\n");
 
     } else {
