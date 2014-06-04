@@ -22,7 +22,7 @@ public:
                                    "mbed Terminal",
                                    "0.1",
                                    "http://www.mbed.org",
-                                   "0000000012345678"),pc(USBTX,USBRX),Position(p17) {};
+                                   "0000000012345678"),pc(USBTX,USBRX),Right(p19),Left(p20) {};
     virtual int callbackRead(u8 *buff, int len);
     virtual void setupDevice();
     virtual void resetDevice();
@@ -35,12 +35,11 @@ private:
     char buffer[OUTL];
     int bcount;
     Serial pc;
-    /*AnalogIn Right;
-    AnalogIn Left;*/
+    AnalogIn Right;
+    AnalogIn Left;
     Ticker tick;
-    /*float right,left,rl,ll;
-    int tl,tr;*/
-    AnalogIn Position;
+    float right,left,rl,ll;
+    int tl,tr;
     Timeout n;
     bool settick;
 };
@@ -56,7 +55,6 @@ void AdkTerm::setupDevice()
     for (int i = 0; i<OUTL; i++) {
         buffer[i] = 0;
     }
-
     bcount = 0;
     //n.attach(this,&AdkTerm::AttachTick,5);
     //tick.attach(this,&AdkTerm::onTick,0.1);
@@ -70,17 +68,32 @@ void AdkTerm::AttachTick()
 
 void AdkTerm::onTick()
 {
-    int pos;
-    u8 wbuf[4];
+    right = 1-Right;
+    left = 1-Left;
+    bool update = false;
+    int templ, tempr;
 
-    pos = (int)(Position * 10000);
+    templ = int(left * 10000);
+    tempr = int(right * 10000);
 
-    wbuf[0] = 'P';
-    wbuf[1] = pos&0xFF;
-    wbuf[2] = (pos>>8) & 0xFF;
-    wbuf[3] = 0;
+    if (abs(templ-tl)>170) {
+        update = true;
+    }
+    if (abs(tempr-tr)>170) {
+        update = true;
+    }
+    if (update) {
+        u8* wbuf = _writebuff;
 
-    this->write(wbuf, 3);
+        wbuf[0] = 'P';
+        wbuf[1] =  templ&0xFF;
+        wbuf[2] = (templ>>8) & 0xFF;
+        wbuf[3] =  tempr&0xFF;
+        wbuf[4] = (tempr>>8) & 0xFF;
+        wbuf[5] = 0;
+
+        this->write(wbuf,5);
+    }
 }
 
 void AdkTerm::resetDevice()
