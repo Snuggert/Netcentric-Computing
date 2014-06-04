@@ -11,16 +11,18 @@ DigitalOut led4(LED4);
 AnalogIn ain(p17);
 Serial pc(USBTX, USBRX);
 
-const int N_PREV_STATES = 12;
-
 struct led_wrapper {
     DigitalOut *led;
-    int prev_states[N_PREV_STATES];
+    int waits;
 };
 
 int main() {
     float speed;
     int pos = 5;
+    int command_active = 1;
+    int end_reached_counter = 0;
+    int half_led = 12;
+    int buf_pos = 0;
     char buf[256];
     char *pend;
 
@@ -45,55 +47,66 @@ int main() {
         }
 
         for (int i = 0; i < 4; i++) {
-            for (int j = N_PREV_STATES - 1; j > 0; j--) {
-                leds[i].prev_states[j] = leds[i].prev_states[j - 1];
-            }
-
-            leds[i].prev_states[0] = *leds[i].led;
             if (current_pos/2 - i > 0) {
                 *leds[i].led = 1;
             } else if (current_pos/2.0 - i == 0.5) {
-                int new_state = !*leds[i].led;
+                if (leds[i].waits < half_led) {
+                    leds[i].waits++;
+                    *leds[i].led = 0;
 
-                for (int j = 0; j < N_PREV_STATES; j++) {
-                    if (leds[i].prev_states[j]) {
-                        new_state = 0;
-                        break;
-                    }
+                } else {
+                    leds[i].waits = 0;
+                    *leds[i].led = 1;
                 }
-
-                *leds[i].led = new_state;
 
             } else {
                 *leds[i].led = 0;
             }
         }
 
-        if (ain.read() < voltages[pos] - 0.0005) {
-            speed = 1.0;
-        } else if (ain.read() > voltages[pos] + 0.0005) {
-            speed = -1.0;
-        } else {
-            speed = 0.0;
+        if (command_active) {
+            if (ain.read() < voltages[pos] - 0.0005) {
+                speed = 1.0;
+                end_reached_counter = 0;
+
+            } else if (ain.read() > voltages[pos] + 0.0005) {
+                speed = -1.0;
+                end_reached_counter = 0;
+
+            } else if (end_reached_counter == 3) {
+                command_active = 0;
+                pc.printf("Reached position %d\n\r", pos);
+
+            } else {
+                speed = 0.0;
+                end_reached_counter++;
+            }
+            hbridge.speed(speed);
         }
-        hbridge.speed(speed);
 
         if (pc.readable()) {
-            char c;
-            int i;
+            char c = pc.getc();
 
-            for (i = 0; i < 255 && (c = pc.getc()) != '\r'; i++) {
-                buf[i] = c;
-                pc.putc(buf[i]);
+            if (c != '\r') {
+                buf[buf_pos] = c;
+                buf_pos++;
+
+                pc.putc(c);
+            } else {
+
+                buf[buf_pos] = '\0';
+                buf_pos = 0;
+
+                pos = (int) strtof(buf, &pend);
+
+                if (pos > 10) {
+                    pos = 10;
+                }
+
+
+                pc.printf("\rMoving to position %d\n\r", pos);
+                command_active = 1;
             }
-            buf[i] = '\0';
-            pos = (int) strtof(buf, &pend);
-
-            if (pos > 10) {
-                pos = 10;
-            }
-
-            pc.printf("\n\rPosition: %d\n\r", pos);
         }
     }
 }
