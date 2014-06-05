@@ -106,19 +106,22 @@ void AdkTerm::onTick()
     float current_pos_f = 0.0;
 
     for (int i = 1; i < 11; i++) {
-        if (ain < voltages[i] - precission[i] * 2) {
+        if (ain < voltages[i] - precission[i] * 2 || i == 10) {
             current_pos = i - 1;
             current_pos_f = current_pos + (ain - voltages[i-1]) / (voltages[i] -
                 voltages[i-1]);
+
+            current_pos_f = floor(current_pos_f*10 + 0.5)/10;
             break;
         }
     }
 
     for (int i = 0; i < 4; i++) {
-        if (current_pos/2 - i > 0) {
+        float temp = current_pos_f/10 * 4 - i;
+        if (temp >= 1) {
             *leds[i]= 1;
-        } else if (current_pos/2.0 - i == 0.5) {
-            *leds[i] = 0.1;
+        } else if (temp > 0.005 && current_pos_f > 0.2) {
+            *leds[i] = temp;
         } else {
             *leds[i] = 0;
         }
@@ -150,7 +153,7 @@ void AdkTerm::onTick()
         hbridge.speed(speed * direction);
     }
 
-    int stream = (int) (current_pos_f * 100);
+    int stream = (int) (current_pos_f * 10);
 
     wbuf[0] = 'P';
     wbuf[1] = stream&0xFF;
