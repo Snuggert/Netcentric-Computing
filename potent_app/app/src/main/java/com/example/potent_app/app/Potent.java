@@ -3,6 +3,7 @@ package com.example.potent_app.app;
 import android.content.Intent;
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -20,6 +21,7 @@ public class Potent extends Activity implements OnSeekBarChangeListener{
     AdkPort mbed;
     BluetoothAdapter bluetoothAdapter;
     int DISCOVERABLE_ENABLE_BT = 2;
+    BluetoothServer mBluetoothServer = null;
 
     boolean mbed_attached = false;
 
@@ -134,7 +136,11 @@ public class Potent extends Activity implements OnSeekBarChangeListener{
         // Check which request we're responding to
         if(requestCode == DISCOVERABLE_ENABLE_BT){
             if(resultCode == RESULT_OK){
-                mBluetoothServer = BluetoothServer
+                try{
+                    mBluetoothServer = new BluetoothServer(this);
+                }catch(IOException e){
+                    Log.d("nope", "", e);
+                }
             }else if(resultCode == RESULT_CANCELED){
 
             }
