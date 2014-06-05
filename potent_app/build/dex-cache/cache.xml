@@ -2,16 +2,16 @@
 <pre-dex-items>
 
     <item
-        dex="/home/jaap/net-centric/GIT/potent_app/app/build/pre-dexed/debug/classes-d25371571d5808aa0fcebc0cc483486e3b4d9678.jar"
-        jar="/home/jaap/net-centric/GIT/potent_app/build/exploded-aar/com.android.support/appcompat-v7/19.1.0/classes.jar"
+        dex="/home/snuggert/School/Netcentric-Computing/potent_app/app/build/pre-dexed/debug/support-v4-19.0.1-18652f466573a46f5a1be13e35c6c5a43f50bdf6.jar"
+        jar="/usr/share/android-studio/data/sdk/extras/android/m2repository/com/android/support/support-v4/19.0.1/support-v4-19.0.1.jar"
         jumboMode="false"
         revision="19.0.3"
-        sha1="3499ceba05ca1f6037c6a2fad73df8f636224a28"/>
+        sha1="587da9a481ffd341d2fa091704489b89845ddacd"/>
     <item
-        dex="/home/jaap/net-centric/GIT/potent_app/app/build/pre-dexed/debug/support-v4-19.1.0-bfe6379f31d17615f5ca4b83bd0a7235fba0720f.jar"
-        jar="/usr/share/android-studio/data/sdk/extras/android/m2repository/com/android/support/support-v4/19.1.0/support-v4-19.1.0.jar"
+        dex="/home/snuggert/School/Netcentric-Computing/potent_app/app/build/pre-dexed/debug/classes-74121cd1d6bfce4bcb1479cad8606b61d694572d.jar"
+        jar="/home/snuggert/School/Netcentric-Computing/potent_app/build/exploded-aar/com.android.support/appcompat-v7/19.0.1/classes.jar"
         jumboMode="false"
         revision="19.0.3"
-        sha1="85f201b380937e61a9dce6ca90ccf6872abbfb67"/>
+        sha1="f71a6822470c9eb659d4f4a6cb57b780b35f058b"/>
 
 </pre-dex-items>

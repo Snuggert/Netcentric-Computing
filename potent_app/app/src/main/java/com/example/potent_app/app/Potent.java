@@ -1,17 +1,24 @@
 package com.example.potent_app.app;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 import com.example.adkPort.AdkPort;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.bluetooth.BluetoothAdapter;
+
 import java.io.IOException;
 
 
-public class Potent extends ActionBarActivity {
-    TextView posField;
+public class Potent extends ActionBarActivity implements OnSeekBarChangeListener{
+    TextView posField, sliderVal;
+    SeekBar potentSlider;
     AdkPort mbed;
+    BluetoothAdapter bluetoothAdapter;
 
     boolean mbed_attached = false;
 
@@ -20,7 +27,17 @@ public class Potent extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_potent);
 
+        sliderVal = (TextView)findViewById(R.id.sliderVal);
         posField = (TextView)findViewById(R.id.showPosition);
+
+        potentSlider = (SeekBar)findViewById(R.id.potentSlider);
+        potentSlider.setOnSeekBarChangeListener(this);
+        potentSlider.setMax(10);
+
+        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        bluetoothAdapter.enable();
+        Intent enabler = new Intent(this, ServerSocketActivity.class);
+        startActivity(enabler);
 
         try {
             mbed = new AdkPort(this);
@@ -69,6 +86,21 @@ public class Potent extends ActionBarActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        sliderVal.setText(""+progress);
+    }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+        mbed.sendString("" + seekBar.getProgress());
     }
 
     @Override
