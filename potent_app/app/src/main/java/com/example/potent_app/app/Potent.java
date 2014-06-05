@@ -19,6 +19,7 @@ public class Potent extends ActionBarActivity implements OnSeekBarChangeListener
     SeekBar potentSlider;
     AdkPort mbed;
     BluetoothAdapter bluetoothAdapter;
+    int REQUEST_ENABLE_BT = 1;
 
     boolean mbed_attached = false;
 
@@ -35,9 +36,11 @@ public class Potent extends ActionBarActivity implements OnSeekBarChangeListener
         potentSlider.setMax(10);
 
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        bluetoothAdapter.enable();
-        Intent enabler = new Intent(this, ServerSocketActivity.class);
-        startActivity(enabler);
+
+        if (!bluetoothAdapter.isEnabled()) {
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+        }
 
         try {
             mbed = new AdkPort(this);
