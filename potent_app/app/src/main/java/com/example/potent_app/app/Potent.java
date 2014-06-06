@@ -1,8 +1,9 @@
 package com.example.potent_app.app;
 
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
+import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -14,12 +15,13 @@ import android.bluetooth.BluetoothAdapter;
 import java.io.IOException;
 
 
-public class Potent extends ActionBarActivity implements OnSeekBarChangeListener{
+public class Potent extends Activity implements OnSeekBarChangeListener{
     TextView posField, sliderVal;
     SeekBar potentSlider;
     AdkPort mbed;
     BluetoothAdapter bluetoothAdapter;
-    int REQUEST_ENABLE_BT = 1;
+    int DISCOVERABLE_ENABLE_BT = 2;
+    BluetoothServer mBluetoothServer = null;
 
     boolean mbed_attached = false;
 
@@ -37,10 +39,8 @@ public class Potent extends ActionBarActivity implements OnSeekBarChangeListener
 
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
-        if (!bluetoothAdapter.isEnabled()) {
-            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-        }
+        Intent discoverable = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+        startActivityForResult(discoverable, DISCOVERABLE_ENABLE_BT);
 
         try {
             mbed = new AdkPort(this);
@@ -139,6 +139,23 @@ public class Potent extends ActionBarActivity implements OnSeekBarChangeListener
 
         super.onResume();
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Check which request we're responding to
+        if(requestCode == DISCOVERABLE_ENABLE_BT){
+            if(resultCode == RESULT_OK){
+                try{
+                    mBluetoothServer = new BluetoothServer(this);
+                }catch(IOException e){
+                    Log.d("nope", "", e);
+                }
+            }else if(resultCode == RESULT_CANCELED){
+
+            }
+        }
+    }
+
 
     private int bytetoint(byte b) {
         int t = ((Byte)b).intValue();
