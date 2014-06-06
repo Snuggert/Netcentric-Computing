@@ -21,6 +21,7 @@ import android.widget.TextView;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.bluetooth.BluetoothAdapter;
+import android.widget.Toast;
 
 import java.util.Set;
 
@@ -29,7 +30,7 @@ import static com.example.potent_client.app.R.layout;
 
 public class PotentClient extends ActionBarActivity implements OnSeekBarChangeListener {
     SeekBar posSlider;
-    TextView sliderPosition;
+    TextView posField;
     Button connectButton;
     Bundle msgBundle;
     String message;
@@ -56,8 +57,9 @@ public class PotentClient extends ActionBarActivity implements OnSeekBarChangeLi
         Log.i("PotentClient", "startup");
 
         connectButton = (Button)findViewById(R.id.connect);
-        sliderPosition = (TextView)findViewById(R.id.sliderPosition);
+        posField = (TextView)findViewById(R.id.sliderPosition);
         posSlider = (SeekBar)findViewById(R.id.posSlider);
+        posSlider.setOnSeekBarChangeListener(this);
         posSlider.setMax(10);
         //posSlider.setEnabled(false);
         Log.i("PotentClient", "View initiated");
@@ -93,7 +95,7 @@ public class PotentClient extends ActionBarActivity implements OnSeekBarChangeLi
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int pos, boolean b) {
-        sliderPosition.setText(" " + pos);
+        posField.setText("" + pos);
     }
 
     @Override
@@ -104,6 +106,12 @@ public class PotentClient extends ActionBarActivity implements OnSeekBarChangeLi
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
         // Send position to other device
+        int duration = Toast.LENGTH_SHORT;
+
+        String text = "Sending position " + seekBar.getProgress();
+
+        Toast toast = Toast.makeText(this, text, duration);
+        toast.show();
     }
 
 }

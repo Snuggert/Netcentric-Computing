@@ -50,11 +50,10 @@ public class ConnectBluetooth extends Activity {
                 deviceList.add(device.getName() + "\n" + device.getAddress());
                 Log.i("broadcastReceiver", "Bluetooth device found: Now " + deviceList.getCount() + " items in deviceList");
             } else if (BluetoothDevice.ACTION_ACL_CONNECTED.equals(action)) {
-                if (device.getAddress().equals(btServer.getAddress())) {
-                    Intent mainIntent = new Intent(ConnectBluetooth.this, PotentClient.class);
-                    //btIntent.putExtra("key", value); //Optional parameters
-                    ConnectBluetooth.this.startActivity(mainIntent);
-                }
+                Log.i("ConnectBluetooth", "BC received: Connected");
+                Intent mainIntent = new Intent(ConnectBluetooth.this, PotentClient.class);
+                //btIntent.putExtra("key", value); //Optional parameters
+                ConnectBluetooth.this.startActivity(mainIntent);
 
             } else if (BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(action)) {
                 // TODO
@@ -149,6 +148,19 @@ public class ConnectBluetooth extends Activity {
 
     }
 
+    @Override
+    protected void onPause() {
+        deviceList.clear();
+        bluetoothAdapter.cancelDiscovery();
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        discover();
+        super.onResume();
+    }
+
 
     @Override
     protected void onDestroy() {
@@ -156,3 +168,4 @@ public class ConnectBluetooth extends Activity {
         super.onDestroy();
     }
 }
+

@@ -1,7 +1,9 @@
 package com.example.potent_client.app;
 
 import android.bluetooth.BluetoothSocket;
+import android.content.Intent;
 import android.os.Handler;
+import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,15 +30,29 @@ public class ConnectedThread extends Thread {
         try {
             tmpIn = socket.getInputStream();
             tmpOut = socket.getOutputStream();
+            Log.i("ConnectedThread", "In and outputstream connected");
         } catch (IOException e) { }
 
         btInStream = tmpIn;
         btOutStream = tmpOut;
+        Log.i("ConnectedThread", "Thread created");
+        run();
     }
 
     public void run() {
         byte[] buffer = new byte[1024];  // buffer store for the stream
         int bytes; // bytes returned from read()
+        Log.i("ConnectedThread", "Running started");
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Intent i = new Intent("com.example.potent_client.app.PotentClient");
+                startActivity(i);
+            }
+        }
+        });
+
 
         // Keep listening to the InputStream until an exception occurs
         while (true) {
@@ -54,6 +70,7 @@ public class ConnectedThread extends Thread {
 
     /* Call this from the main activity to send data to the remote device */
     public void write(byte[] bytes) {
+        Log.i("ConnectedThread", "Going to write");
         try {
             btOutStream.write(bytes);
         } catch (IOException e) { }

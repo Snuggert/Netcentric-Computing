@@ -37,19 +37,26 @@ public class ConnectThread extends Thread {
             this.cancel();
         }
         serverSocket = tmp;
+        run();
     }
 
     public void run() {
+        Log.i("ConnectThread", "Running started");
         // Cancel discovery because it will slow down the connection
         btAdapter.cancelDiscovery();
+
 
         try {
             // Connect the device through the socket. This will block
             // until it succeeds or throws an exception
+            Log.i("ConnectThread", "before connecting socket");
             serverSocket.connect();
+            Log.i("ConnectThread", "connect to serverSocket done");
         } catch (IOException connectException) {
             // Unable to connect; close the socket and get out
+            Log.i("Connect Thread Exception", connectException.getMessage() + " ");
             try {
+                Log.i("Connect Thread", "Connecting failed");
                 serverSocket.close();
             } catch (IOException closeException) {
             }
