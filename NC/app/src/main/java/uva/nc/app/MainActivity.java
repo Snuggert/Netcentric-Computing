@@ -362,6 +362,8 @@ public class MainActivity extends ServiceActivity {
                 Serializable obj = intent.getSerializableExtra(SlaveManager.EXTRA_OBJECT);
                 if (obj != null) {
                     toastShort("From master:\n" + String.valueOf(obj));
+                    position.setText(String.valueOf(obj));
+                    slider.setProgress(Integer.parseInt(String.valueOf(obj)));
                 } else {
                     toastShort("From master:\nnull");
                 }
