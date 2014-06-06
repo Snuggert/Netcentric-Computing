@@ -71,6 +71,15 @@ public class Potent extends ActionBarActivity implements OnSeekBarChangeListener
         mbed.sendString("GO");
     }
 
+    @Override
+    protected void onActivityResult (int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_ENABLE_BT && resultCode == RESULT_OK) {
+            // Bluetooth enabled
+
+
+        }
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
