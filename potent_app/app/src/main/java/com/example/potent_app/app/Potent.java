@@ -13,15 +13,16 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.bluetooth.BluetoothAdapter;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 
 public class Potent extends Activity implements OnSeekBarChangeListener{
     TextView posField, sliderVal;
     SeekBar potentSlider;
     AdkPort mbed;
-    BluetoothAdapter bluetoothAdapter;
+    BluetoothAdapter mBluetoothAdapter;
     int DISCOVERABLE_ENABLE_BT = 2;
-    BluetoothServer mBluetoothServer = null;
+    BluetoothServer mBluetoothServer;
 
     boolean mbed_attached = false;
 
@@ -36,8 +37,9 @@ public class Potent extends Activity implements OnSeekBarChangeListener{
         potentSlider = (SeekBar)findViewById(R.id.potentSlider);
         potentSlider.setOnSeekBarChangeListener(this);
         potentSlider.setMax(10);
+        mBluetoothServer = null;
 
-        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
         Intent discoverable = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
         startActivityForResult(discoverable, DISCOVERABLE_ENABLE_BT);
@@ -47,6 +49,7 @@ public class Potent extends Activity implements OnSeekBarChangeListener{
         } catch (IOException e) {
             return;
         }
+
 
         mbed.attachOnNew(new AdkPort.MessageNotifier(){
             @Override
@@ -59,6 +62,11 @@ public class Potent extends Activity implements OnSeekBarChangeListener{
                         int position = bytetoint(in[1]) + bytetoint(in[2]) * 256;
 
                         posField.setText("" + position);
+                        byte[] bytes = ByteBuffer.allocate(4).putInt(position).array();
+                        if (mBluetoothServer != null && mBluetoothServer.thread != null) {
+                            mBluetoothServer.thread.write(bytes);
+                        }
+
                         break;
                     default:
                         break;
@@ -66,9 +74,11 @@ public class Potent extends Activity implements OnSeekBarChangeListener{
             }
         });
 
+
         Thread thread = new Thread(mbed);
         thread.start();
         mbed.sendString("GO");
+
     }
 
     @Override
@@ -112,7 +122,12 @@ public class Potent extends Activity implements OnSeekBarChangeListener{
 
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
-        mbed.sendString("" + seekBar.getProgress());
+        sendToMbed("" + seekBar.getProgress());
+
+    }
+
+    public void sendToMbed(String mesg) {
+        mbed.sendString(mesg);
     }
 
     @Override
