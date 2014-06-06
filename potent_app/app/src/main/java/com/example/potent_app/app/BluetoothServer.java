@@ -30,21 +30,32 @@ public class BluetoothServer implements Runnable {
         if (!mBluetooth.isEnabled()) {
             throw (new IOException("No bluetooth enabled."));
         }
+        Log.i("Bluetoothserver", "initialized");
+        run();
     }
 
     // This loop runs all the time, looking for new data in from the Accessory
     @Override
     public void run() {
         BluetoothSocket socket = null;
+        Log.i("Bluetoothserver", "Start running");
         try {
+            Log.i("Bluetoothserver", "creating server socket");
             mServerSocket = mBluetooth.listenUsingRfcommWithServiceRecord(PROTOCOL_SCHEME_RFCOMM,
                     UUID.fromString("a60f35f0-b93a-11de-8a39-08002009c666"));
+            Log.i("Bluetoothserver", "created server socket");
+
+
         } catch (IOException e) {
             Log.e("Server Socket listening failed", "", e);
         }
         while (true) {
             try {
+                Log.i("Bluetoothserver", "accepting connections");
+
                 socket = mServerSocket.accept();
+                Log.i("Bluetoothserver", "accepted a connection");
+
             } catch (IOException e) {
                 Log.e("Socket acceptance failed", "", e);
             }
@@ -52,7 +63,12 @@ public class BluetoothServer implements Runnable {
             if (socket == null)
                 continue;
 
+            Log.i("Bluetoothserver", "socket is not null");
+
+
             thread = new ConnectedThread(socket);
+            Log.i("Bluetoothserver", "socket is not null");
+
             break;
 
         }
@@ -68,6 +84,8 @@ public class BluetoothServer implements Runnable {
         private final OutputStream mmOutStream;
 
         public ConnectedThread(BluetoothSocket socket) {
+            Log.i("connectedthread", "initializing");
+
             mmSocket = socket;
             InputStream tmpIn = null;
             OutputStream tmpOut = null;
@@ -81,9 +99,12 @@ public class BluetoothServer implements Runnable {
 
             mmInStream = tmpIn;
             mmOutStream = tmpOut;
+            run();
         }
 
         public void run() {
+            Log.i("connectedthread", "is now running");
+
             byte[] buffer = new byte[1024];  // buffer store for the stream
             int bytes; // bytes returned from read()
 

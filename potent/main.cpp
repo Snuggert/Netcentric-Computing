@@ -62,8 +62,7 @@ private:
     int command_active;
     int end_reached_counter;
     int buf_pos;
-    int BUF_SIZE;
-    char buf[BUF_SIZE];
+    char buf[256];
     char *pend;
 
     PwmOut *leds[4];
@@ -197,7 +196,7 @@ void AdkTerm::serialIRQ()
 {
     char c = pc.getc();
 
-    if (c != '\r' && buf_pos < BUF_SIZE) {
+    if (c != '\r' && buf_pos < 255) {
         buffer[buf_pos] = c;
         buf_pos++;
 

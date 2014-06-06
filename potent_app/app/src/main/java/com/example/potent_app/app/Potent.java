@@ -22,12 +22,14 @@ public class Potent extends Activity implements OnSeekBarChangeListener{
     AdkPort mbed;
     BluetoothAdapter mBluetoothAdapter;
     int DISCOVERABLE_ENABLE_BT = 2;
+    int RESULT_OK = 120;
     BluetoothServer mBluetoothServer;
 
     boolean mbed_attached = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.i("Potent", "start creating");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_potent);
 
@@ -43,6 +45,7 @@ public class Potent extends Activity implements OnSeekBarChangeListener{
 
         Intent discoverable = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
         startActivityForResult(discoverable, DISCOVERABLE_ENABLE_BT);
+
 
         try {
             mbed = new AdkPort(this);
@@ -79,15 +82,7 @@ public class Potent extends Activity implements OnSeekBarChangeListener{
         thread.start();
         mbed.sendString("GO");
 
-    }
 
-    @Override
-    protected void onActivityResult (int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_ENABLE_BT && resultCode == RESULT_OK) {
-            // Bluetooth enabled
-
-
-        }
     }
 
 
@@ -122,7 +117,7 @@ public class Potent extends Activity implements OnSeekBarChangeListener{
 
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
-        sendToMbed("" + seekBar.getProgress());
+        //sendToMbed("" + seekBar.getProgress());
 
     }
 
@@ -158,10 +153,17 @@ public class Potent extends Activity implements OnSeekBarChangeListener{
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Check which request we're responding to
+        Log.i("Potent", "ACTIVITY_RESULT");
         if(requestCode == DISCOVERABLE_ENABLE_BT){
-            if(resultCode == RESULT_OK){
+            Log.i("Potent", "DISCOVERABLE_ENABLE_BT");
+            Log.i("Potent", "RESULT: " + RESULT_OK + "resultCode: " + resultCode);
+            if(resultCode > 0){
+                Log.i("Potent", "RESULT_OK");
+
                 try{
+                    Log.i("Potent", "Setting up server");
                     mBluetoothServer = new BluetoothServer(this);
+                    Log.i("Potent", "Server is setup");
                 }catch(IOException e){
                     Log.d("nope", "", e);
                 }
