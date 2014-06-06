@@ -177,6 +177,7 @@ public class MainActivity extends ServiceActivity {
         slider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             public void onProgressChanged(SeekBar seekbar, int pos, boolean b) {
                 position.setText(Integer.toString(pos));
+
             }
 
             public void onStartTrackingTouch(SeekBar seekbar) {
