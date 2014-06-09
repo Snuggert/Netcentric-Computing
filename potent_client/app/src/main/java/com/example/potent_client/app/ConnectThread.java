@@ -5,10 +5,12 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.os.Handler;
+import android.os.ParcelUuid;
 import android.util.Log;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.UUID;
 
 /**
@@ -27,10 +29,12 @@ public class ConnectThread extends Thread {
         btAdapter = adapter;
         mHandler = handler;
 
+        listUuids();
         // Get a BluetoothSocket to connect with the given BluetoothDevice
         try {
             // MY_UUID is the app's UUID string, also used by the server code
-            tmp = device.createRfcommSocketToServiceRecord(UUID.fromString(Constants.UUIDSTRING));
+            //tmp = device.createRfcommSocketToServiceRecord(UUID.fromString(Constants.UUIDSTRING));
+            tmp = device.createRfcommSocketToServiceRecord(serverDevice.getUuids()[1].getUui‌​d());
             Log.i("ConnectThread", "Create RF done");
         } catch (Exception e) {
             Log.i("ConnectThread", "Create RF failed (wrong UUID?)");
@@ -60,6 +64,7 @@ public class ConnectThread extends Thread {
                 serverSocket.close();
             } catch (IOException closeException) {
             }
+            //this.start(); // STart over
             return;
         }
 
@@ -74,5 +79,17 @@ public class ConnectThread extends Thread {
             } catch (IOException e) {
             }
         }
+    }
+
+    private void listUuids() {
+        int i = 0;
+        ParcelUuid[] uuids;
+
+        uuids = serverDevice.getUuids();
+
+        for (i = 0; i < uuids.length; i ++) {
+            Log.i("UUID LIST", "Found no " + i + ": " + uuids[i].getUui‌​d().toString());
+        }
+
     }
 }

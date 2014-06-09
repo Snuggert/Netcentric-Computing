@@ -7,5 +7,5 @@ import java.util.UUID;
  */
 public class Constants {
     static final int MESSAGE_READ = 900;
-    static final String UUIDSTRING = "a60f35f0-b93a-11de-8a39-08002009c666";
+    static final String UUIDSTRING = "potent_app2014";
 }

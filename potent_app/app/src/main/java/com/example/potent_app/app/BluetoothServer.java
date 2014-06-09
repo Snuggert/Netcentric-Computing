@@ -42,7 +42,7 @@ public class BluetoothServer implements Runnable {
         try {
             Log.i("Bluetoothserver", "creating server socket");
             mServerSocket = mBluetooth.listenUsingRfcommWithServiceRecord(PROTOCOL_SCHEME_RFCOMM,
-                    UUID.fromString("a60f35f0-b93a-11de-8a39-08002009c666"));
+                    UUID.fromString("potent_app2014"));
             Log.i("Bluetoothserver", "created server socket");
 
 

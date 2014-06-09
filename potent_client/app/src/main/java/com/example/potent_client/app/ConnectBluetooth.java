@@ -52,7 +52,7 @@ public class ConnectBluetooth extends Activity {
             } else if (BluetoothDevice.ACTION_ACL_CONNECTED.equals(action)) {
                 Log.i("ConnectBluetooth", "BC received: Connected");
                 Intent mainIntent = new Intent(ConnectBluetooth.this, PotentClient.class);
-                //btIntent.putExtra("key", value); //Optional parameters
+                mainIntent.putExtra("Device", device); //Optional parameters
                 ConnectBluetooth.this.startActivity(mainIntent);
 
             } else if (BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(action)) {

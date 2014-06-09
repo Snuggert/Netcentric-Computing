@@ -44,16 +44,6 @@ public class ConnectedThread extends Thread {
         int bytes; // bytes returned from read()
         Log.i("ConnectedThread", "Running started");
 
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Intent i = new Intent("com.example.potent_client.app.PotentClient");
-                startActivity(i);
-            }
-        }
-        });
-
-
         // Keep listening to the InputStream until an exception occurs
         while (true) {
             try {

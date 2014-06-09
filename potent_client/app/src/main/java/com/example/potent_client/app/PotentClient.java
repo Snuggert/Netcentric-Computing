@@ -72,6 +72,10 @@ public class PotentClient extends ActionBarActivity implements OnSeekBarChangeLi
             }
         });
         Log.i("PotentClient", "Button initiated");
+
+        Intent intent = getIntent();
+
+
     }
 
     @Override
