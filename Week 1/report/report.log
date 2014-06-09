@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.4-1.40.13 (MiKTeX 2.9) (preloaded format=pdflatex 2013.5.8)  9 JUN 2014 18:09
+This is pdfTeX, Version 3.1415926-2.4-1.40.13 (MiKTeX 2.9) (preloaded format=pdflatex 2013.5.8)  10 JUN 2014 01:04
 entering extended mode
 **report.tex
 (A:\School\Netcentric-Computing\report\report.tex
@@ -284,25 +284,39 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 ) [1
 
 {C:/Users/TheAbe/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map} <A:/School/
-Netcentric-Computing/report/logo.jpg>]) <./diagram.jpg, id=10, 2931.95375pt x 2
-961.0625pt>
-File: ./diagram.jpg Graphic file (type jpg)
+Netcentric-Computing/report/logo.jpg>])
+<./calibration.jpg, id=10, 1035.87pt x 597.23125pt>
+File: ./calibration.jpg Graphic file (type jpg)
+ <use ./calibration.jpg>
+Package pdftex.def Info: ./calibration.jpg used on input line 23.
+(pdftex.def)             Requested size: 452.9679pt x 261.16045pt.
 
-<use ./diagram.jpg>
-Package pdftex.def Info: ./diagram.jpg used on input line 21.
-(pdftex.def)             Requested size: 452.9679pt x 457.42375pt.
-
-Underfull \hbox (badness 10000) in paragraph at lines 21--22
+Underfull \hbox (badness 10000) in paragraph at lines 27--56
 
  []
 
-[1] [2 <A:/School/Netcentric-Computing/report/diagram.jpg>]
+[1 <A:/School/Netcentric-Computing/report/calibration.jpg>]
+Underfull \hbox (badness 10000) in paragraph at lines 58--70
+
+ []
+
+<./diagram.jpg, id=14, 2931.95375pt x 2961.0625pt>
+File: ./diagram.jpg Graphic file (type jpg)
+ <use ./diagram.jpg>
+Package pdftex.def Info: ./diagram.jpg used on input line 74.
+(pdftex.def)             Requested size: 452.9679pt x 457.42375pt.
+
+Underfull \hbox (badness 10000) in paragraph at lines 73--75
+
+ []
+
+[2] [3 <A:/School/Netcentric-Computing/report/diagram.jpg>]
 (A:\School\Netcentric-Computing\report\report.aux) ) 
 Here is how much of TeX's memory you used:
- 3091 strings out of 493921
- 40005 string characters out of 3144874
- 101360 words of memory out of 3000000
- 6348 multiletter control sequences out of 15000+200000
+ 3103 strings out of 493921
+ 40183 string characters out of 3144874
+ 106360 words of memory out of 3000000
+ 6359 multiletter control sequences out of 15000+200000
  11045 words of font info for 41 fonts, out of 3000000 for 9000
  841 hyphenation exceptions out of 8191
  27i,4n,26p,416b,263s stack positions out of 5000i,500n,10000p,200000b,50000s
@@ -311,9 +325,9 @@ TeX 2.9/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Program Files (x86)/MiKTe
 X 2.9/fonts/type1/public/amsfonts/cm/cmcsc10.pfb><C:/Program Files (x86)/MiKTeX
  2.9/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Program Files (x86)/MiKTeX 2.
 9/fonts/type1/public/amsfonts/cm/cmti12.pfb>
-Output written on report.pdf (3 pages, 2059320 bytes).
+Output written on report.pdf (4 pages, 2088904 bytes).
 PDF statistics:
- 30 PDF objects out of 1000 (max. 8388607)
+ 34 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
- 11 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 16 words of extra memory for PDF output out of 10000 (max. 10000000)
 

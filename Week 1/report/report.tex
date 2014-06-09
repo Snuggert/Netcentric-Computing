@@ -15,6 +15,14 @@ Voor interactie met de motor, verbonden aan de mbed, gebruikten we de Hbridge li
 
 
 \section{Mbed naar Android Telefoon}
+Omdat we eerst de Mbed aan de computer hadden verbonden en daarin een message passing systeem hadden geimplementeerd was de stap naar Mbed tot Android Phone vrij klein.
+
+De Mbed ontvangt een string die door strtof naar een int probeert te worden omgevormd, wanneer dit lukt wordt command active flag op $1$ gezet en wordt er naar de doorgegeven positie gedraaid door de motor in de servo. De command active flag geeft in de tick, de \' while\' loop binnen de ADK library, aan dat er bewogen moet worden.
+
+In deze zelfde tick wordt elke iteratie van de positie van de servo doorgegeven naar de android telefoon verbonden met de Mbed. Deze positie wordt in gehele procenten meegegeven. Omdat de potentiometer geen lineair pad volgt hebben we paden tussen de gehele punten op de potentiometer lineair geinterpoleert, zie hieronder.\\
+\includegraphics[width=1\textwidth]{./calibration.jpg}\\
+De mbed interpreteert het voltage afkomstig uit de servo als een getal tussen 0 en 1, waarbij 0 staat voor 0 volt en 1 staat voor de volle 3.3V.
+
 \section{Android naar Android (Bluetooth)}
 Nadat we met de Android applicatie de mbed aan konden sturen hebben we ons
 gericht op de bluetooth-implementatie. Omdat wij niet gezien hadden dat er een
@@ -62,5 +70,6 @@ is van de bron van de variabele waarmee we de functie aanroepen.\\
 
 
 \section{Diagram}
+Hieronder valt het diagram te vinden dat in vrij grote precisie onze opstelling representeerd.\\
 \includegraphics[width=1\textwidth]{./diagram.jpg}\\
 \end{document}
