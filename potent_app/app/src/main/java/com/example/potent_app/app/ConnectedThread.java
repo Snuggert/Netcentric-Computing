@@ -6,6 +6,7 @@ import android.util.Log;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
 
 /**
  * Created by jelte on 9-6-14.
@@ -41,19 +42,20 @@ public class ConnectedThread extends Thread {
         Log.i("connectedthread", "is now running");
 
         byte[] buffer = new byte[1024];  // buffer store for the stream
-        int bytes; // bytes returned from read()
+        int n_bytes; // bytes returned from read()
 
         // Keep listening to the InputStream until an exception occurs
         while (true) {
             try {
                 // Read from the InputStream
                 Log.i("connectedthread", "trying to read");
-                bytes = mmInStream.read(buffer);
+                n_bytes = mmInStream.read(buffer);
+                int target = byteArrToInt(buffer);
                 Log.i("connectedthread", "read bytes");
-                Log.i("connectedthread", "" + bytes);
+                Log.i("connectedthread", "" + byteArrToInt(buffer));
                 // Send the obtained bytes to the UI activity
                 // potent.sendToMbed("" + bytes);
-                mmServer.btService.currentTarget = bytes;
+                mmServer.btService.currentTarget = target;
             } catch (IOException e) {
                 break;
             }
@@ -75,5 +77,23 @@ public class ConnectedThread extends Thread {
             mmSocket.close();
         } catch (IOException e) {
         }
+    }
+
+    public int byteToInt(byte b) {
+        int t = ((Byte)b).intValue();
+        if (t < 0)
+        {
+            t += 256;
+        }
+        return t;
+    }
+
+    public int byteArrToInt(byte[] b) {
+        return ByteBuffer.wrap(b).getInt();
+    }
+
+
+    public byte[] intToByteArr(int i) {
+        return ByteBuffer.allocate(4).putInt(i).array();
     }
 }

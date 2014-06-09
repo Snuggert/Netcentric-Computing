@@ -31,8 +31,12 @@ public class BTService extends Service {
         }
     }
 
+    @Override public void onDestroy() {
 
-    public void onStartCommand() {
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int x, int y) {
         /*
         try {
             mbed = new AdkPort(this);
@@ -80,6 +84,8 @@ public class BTService extends Service {
             Log.d("nope", "", e);
         }
         started = true;
+
+        return START_STICKY_COMPATIBILITY;
     }
 
     @Override
@@ -93,17 +99,4 @@ public class BTService extends Service {
         return mBinder;
     }
 
-    private int bytetoint(byte b) {
-        int t = ((Byte)b).intValue();
-        if (t < 0)
-        {
-            t += 256;
-        }
-        return t;
-    }
-
-
-    private byte[] inttobyte(int i) {
-        return ByteBuffer.allocate(4).putInt(i).array();
-    }
 }
