@@ -44,9 +44,6 @@ public class Potent extends Activity implements OnSeekBarChangeListener{
         potentSlider.setOnSeekBarChangeListener(this);
         potentSlider.setMax(10);
 
-
-
-
     }
 
     @Override
@@ -171,6 +168,7 @@ public class Potent extends Activity implements OnSeekBarChangeListener{
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
             Log.i("ServiceConnection", "unbinding");
+
             mBound = false;
         }
     };

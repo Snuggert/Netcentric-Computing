@@ -23,6 +23,7 @@ public class BTService extends Service {
     public int currentPosition;
     public AdkPort mbed;
     boolean started = false;
+    public Potent mPotent;
 
     public class LocalBinder extends Binder {
         BTService getService() {
@@ -32,12 +33,10 @@ public class BTService extends Service {
     }
 
     @Override public void onDestroy() {
-
+        super.onDestroy();
     }
 
-    @Override
-    public int onStartCommand(Intent intent, int x, int y) {
-        /*
+    private void startMbed() {
         try {
             mbed = new AdkPort(this);
         } catch (IOException e) {
@@ -53,9 +52,9 @@ public class BTService extends Service {
                 switch(in[0])
                 {
                     case 'P':
-                        currentPosition = bytetoint(in[1]) + bytetoint(in[2]) * 256;
+                        currentPosition = byteToInt(in[1]) + byteToInt(in[2]) * 256;
 
-                        byte[] bytes = ByteBuffer.allocate(4).putInt(currentPosition).array();
+                        byte[] bytes = intToByteArr(currentPosition);
                         if (mBluetoothServer != null && mBluetoothServer.conThread != null) {
                             mBluetoothServer.conThread.write(bytes);
                         }
@@ -67,12 +66,14 @@ public class BTService extends Service {
             }
         });
 
-
         Thread thread = new Thread(mbed);
         thread.start();
         mbed.sendString("GO");
-        */
 
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int x, int y) {
 
         try{
             Log.i("BTService", "Setting up server");
@@ -97,6 +98,19 @@ public class BTService extends Service {
         }
 
         return mBinder;
+    }
+
+    public int byteToInt(byte b) {
+        int t = ((Byte)b).intValue();
+        if (t < 0)
+        {
+            t += 256;
+        }
+        return t;
+    }
+
+    public byte[] intToByteArr(int i) {
+        return ByteBuffer.allocate(4).putInt(i).array();
     }
 
 }

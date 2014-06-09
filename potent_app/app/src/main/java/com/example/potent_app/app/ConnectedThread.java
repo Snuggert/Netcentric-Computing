@@ -56,6 +56,7 @@ public class ConnectedThread extends Thread {
                 // Send the obtained bytes to the UI activity
                 // potent.sendToMbed("" + bytes);
                 mmServer.btService.currentTarget = target;
+                mmServer.btService.mbed.sendString("" + target);
             } catch (IOException e) {
                 break;
             }
@@ -79,21 +80,16 @@ public class ConnectedThread extends Thread {
         }
     }
 
-    public int byteToInt(byte b) {
-        int t = ((Byte)b).intValue();
-        if (t < 0)
-        {
-            t += 256;
-        }
-        return t;
+    public void sentIntAsBytes() {
+
     }
+
+
 
     public int byteArrToInt(byte[] b) {
         return ByteBuffer.wrap(b).getInt();
     }
 
 
-    public byte[] intToByteArr(int i) {
-        return ByteBuffer.allocate(4).putInt(i).array();
-    }
+
 }
