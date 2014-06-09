@@ -19,19 +19,19 @@ public class BluetoothServer implements Runnable {
 
     BluetoothAdapter mBluetooth = BluetoothAdapter.getDefaultAdapter();
     private BluetoothServerSocket mServerSocket;
-    Potent potent;
-    ConnectedThread thread;
+    final BTService btService;
+    ConnectedThread conThread;
 
 
     // initialization.
-    public BluetoothServer(Potent context) throws IOException {
-        potent = context;
-        thread = null;
+    public BluetoothServer(BTService context) throws IOException {
+        btService = context;
+        conThread = null;
         if (!mBluetooth.isEnabled()) {
             throw (new IOException("No bluetooth enabled."));
         }
         Log.i("Bluetoothserver", "initialized");
-        run();
+        new Thread(this).start();
     }
 
     // This loop runs all the time, looking for new data in from the Accessory
@@ -66,8 +66,8 @@ public class BluetoothServer implements Runnable {
             Log.i("Bluetoothserver", "socket is not null");
 
 
-            thread = new ConnectedThread(socket);
-            Log.i("Bluetoothserver", "socket is not null");
+            conThread = new ConnectedThread(socket, this);
+            Log.i("Bluetoothserver", "conThread created");
 
             break;
 
@@ -77,65 +77,6 @@ public class BluetoothServer implements Runnable {
     }
 
     private void getMessage() {};
-
-    public class ConnectedThread extends Thread {
-        private final BluetoothSocket mmSocket;
-        private final InputStream mmInStream;
-        private final OutputStream mmOutStream;
-
-        public ConnectedThread(BluetoothSocket socket) {
-            Log.i("connectedthread", "initializing");
-
-            mmSocket = socket;
-            InputStream tmpIn = null;
-            OutputStream tmpOut = null;
-
-            // Get the input and output streams, using temp objects because
-            // member streams are final
-            try {
-                tmpIn = socket.getInputStream();
-                tmpOut = socket.getOutputStream();
-            } catch (IOException e) { }
-
-            mmInStream = tmpIn;
-            mmOutStream = tmpOut;
-            run();
-        }
-
-        public void run() {
-            Log.i("connectedthread", "is now running");
-
-            byte[] buffer = new byte[1024];  // buffer store for the stream
-            int bytes; // bytes returned from read()
-
-            // Keep listening to the InputStream until an exception occurs
-            while (true) {
-                try {
-                    // Read from the InputStream
-                    bytes = mmInStream.read(buffer);
-                    // Send the obtained bytes to the UI activity
-                    // potent.sendToMbed("" + bytes);
-                    potent.potentSlider.setProgress(bytes);
-                } catch (IOException e) {
-                    break;
-                }
-            }
-        }
-
-        /* Call this from the main activity to send data to the remote device */
-        public void write(byte[] bytes) {
-            try {
-                mmOutStream.write(bytes);
-            } catch (IOException e) { }
-        }
-
-        /* Call this from the main activity to shutdown the connection */
-        public void cancel() {
-            try {
-                mmSocket.close();
-            } catch (IOException e) { }
-        }
-    }
 
 }
 

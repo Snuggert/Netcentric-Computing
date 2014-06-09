@@ -1,8 +1,12 @@
 package com.example.potent_app.app;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.app.Activity;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,9 +27,9 @@ public class Potent extends Activity implements OnSeekBarChangeListener{
     BluetoothAdapter mBluetoothAdapter;
     int DISCOVERABLE_ENABLE_BT = 2;
     int RESULT_OK = 120;
-    BluetoothServer mBluetoothServer;
-
-    boolean mbed_attached = false;
+    BTService mBTService;
+    boolean mBound = false;
+    boolean discovering = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,50 +43,34 @@ public class Potent extends Activity implements OnSeekBarChangeListener{
         potentSlider = (SeekBar)findViewById(R.id.potentSlider);
         potentSlider.setOnSeekBarChangeListener(this);
         potentSlider.setMax(10);
-        mBluetoothServer = null;
-
-        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-
-        Intent discoverable = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-        startActivityForResult(discoverable, DISCOVERABLE_ENABLE_BT);
 
 
-        try {
-            mbed = new AdkPort(this);
-        } catch (IOException e) {
-            return;
+
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        if (!discovering) {
+            discovering = true;
+
+            mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+            Intent discoverable = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+
+            startActivityForResult(discoverable, DISCOVERABLE_ENABLE_BT);
+            discovering = false;
         }
 
+    }
 
-        mbed.attachOnNew(new AdkPort.MessageNotifier(){
-            @Override
-            public void onNew()
-            {
-                byte[] in = mbed.readB();
-                switch(in[0])
-                {
-                    case 'P':
-                        int position = bytetoint(in[1]) + bytetoint(in[2]) * 256;
-
-                        posField.setText("" + position);
-                        byte[] bytes = ByteBuffer.allocate(4).putInt(position).array();
-                        if (mBluetoothServer != null && mBluetoothServer.thread != null) {
-                            mBluetoothServer.thread.write(bytes);
-                        }
-
-                        break;
-                    default:
-                        break;
-                }
-            }
-        });
-
-
-        Thread thread = new Thread(mbed);
-        thread.start();
-        mbed.sendString("GO");
-
-
+    @Override
+    protected void onStop(){
+        if (mBound) {
+            unbindService(mConnection);
+        }
+        super.onStop();
     }
 
 
@@ -127,8 +115,7 @@ public class Potent extends Activity implements OnSeekBarChangeListener{
 
     @Override
     public void onDestroy() {
-        if (mbed != null)
-            mbed.onDestroy(this);
+
 
         super.onDestroy();
 
@@ -158,28 +145,34 @@ public class Potent extends Activity implements OnSeekBarChangeListener{
             Log.i("Potent", "DISCOVERABLE_ENABLE_BT");
             Log.i("Potent", "RESULT: " + RESULT_OK + "resultCode: " + resultCode);
             if(resultCode > 0){
-                Log.i("Potent", "RESULT_OK");
+                Log.i("Potent", "Binding service");
+                Intent intent = new Intent(this, BTService.class);
+                bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 
-                try{
-                    Log.i("Potent", "Setting up server");
-                    mBluetoothServer = new BluetoothServer(this);
-                    Log.i("Potent", "Server is setup");
-                }catch(IOException e){
-                    Log.d("nope", "", e);
-                }
+                Log.i("Potent", "Bound service");
+
             }else if(resultCode == RESULT_CANCELED){
 
             }
         }
     }
 
+    private ServiceConnection mConnection = new ServiceConnection() {
 
-    private int bytetoint(byte b) {
-        int t = ((Byte)b).intValue();
-        if (t < 0)
-        {
-            t += 256;
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            BTService.LocalBinder binder = (BTService.LocalBinder) service;
+            mBTService = binder.getService();
+            mBound = true;
         }
-        return t;
-    }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            Log.i("ServiceConnection", "unbinding");
+            mBound = false;
+        }
+    };
+
 }
