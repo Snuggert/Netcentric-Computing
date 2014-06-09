@@ -15,8 +15,52 @@ Voor interactie met de motor, verbonden aan de mbed, gebruikten we de Hbridge li
 
 
 \section{Mbed naar Android Telefoon}
-\section{Android naar Android}
+\section{Android naar Android (Bluetooth)}
+Nadat we met de Android applicatie de mbed aan konden sturen hebben we ons
+gericht op de bluetooth-implementatie. Omdat wij niet gezien hadden dat er een
+werkend framework aangeboden was (deze stond onder een link "Android Studio",
+welke wij al geinstalleerd hadden, en zodoende niet aangeklikt hadden) hebben we
+onze eigen applicaties vanuit niets opgebouwd: een applicatie die dient als
+bluetoothserver en een bluetooth client. De applicatie die dient als
+server neemt de communicatie met de mbed voor zijn rekening, de bluetooth client
+applicatie maakt verbinding met de server en stuurt de gewenste stand van de
+servo door naar de server.\\
+Het programmeren van de bluetooth-communicatie zelf is in Android vrij eenvoudig,
+de online documentatie geeft een duidelijk stappenplan met voorbeeldcode, die we
+eenvoudig aan onze eigen wensen aan konden passen. Een connectie tussen de twee
+applicaties was zonder veel moeite opgezet: Het enige probleem dat we hier zijn
+tegengekomen (en ons toch een paar uur gekost heeft) is dat - om een voor ons
+onbekende reden - een bepaalde random UUID die we gebruikten voor de connectie
+niet werkte, ondanks dat deze op beide apparaten hetzelfde was. Hier kwamen we
+achter nadat we een lijst van beschikbare UUID's van een laptop opvroegen en
+deze verbinding moeiteloos tot stand kwam.\\
+Het grootste probleem bij het versturen van data over de bluetooth-connectie was
+onze worsteling met Android zelf; het versturen van data uit onze main Activity
+(waar een SeekBar in staat waarmee we integers genereren om uiteindelijk de
+servo aan te sturen) naar de thread waarin de bluetooth-verbinding loopt. We
+hebben op 1001 manieren geprobeerd messages door te sturen via Handlers, die we
+op verschillende creatieve manieren weer tussen activities and threads hebben
+proberen door te sturen, maar door onze gebrekkige kennis van Android wilde dit
+niet lukken. Uiteindelijk hebben we een Service aangemaakt waarin we de
+referentie naar de ConnectedThread gezet hebben. Services zijn vanuit alle 
+activities te benaderen, dus hierdoor was het eenvoudig de write() functie uit
+de ConnectedThread instantie aan te roepen.\\
+
 \section{Conclusie}
+Helaas hebben we de servo niet met meerdere clients aan kunnen sturen, doordat
+we vrijdagmiddag een uur voordat het lokaal dichtging pas via een ander groepje
+te horen kregen dat er nog een ander framework was. Hier zijn we even mee bezig
+geweest, maar in dat uurtje zijn we niet zover gekomen dat het ook werkte.
+Aangezien we in het weekend niet de beschikking hadden over de mbed hebben we
+ervoor gekozen de applicaties af te maken waar we mee begonnen waren, omdat
+hierin de mbed-besturing al werkte. Zodra we de bluetooth-verbinding werkende
+hadden zou het alleen nog een kwestie zijn van het doorsturen van de ontvangen
+waarde naar de mbed. Dit is hoe we het uiteindelijk gedaan hebben. De combinatie
+bluetooth/mbed hebben we dus niet kunnen testen, maar we kunnen met aan waarheid
+grenzende waarschijnlijkheid zeggen dat dit werkt, omdat het slechts een kwestie
+is van de bron van de variabele waarmee we de functie aanroepen.\\
+
+
 \section{Diagram}
 \includegraphics[width=1\textwidth]{./diagram.jpg}\\
 \end{document}

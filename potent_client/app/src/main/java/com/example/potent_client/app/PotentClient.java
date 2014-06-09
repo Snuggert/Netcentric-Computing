@@ -48,6 +48,7 @@ public class PotentClient extends ActionBarActivity implements OnSeekBarChangeLi
         posSlider = (SeekBar)findViewById(R.id.posSlider);
         posSlider.setOnSeekBarChangeListener(this);
         posSlider.setMax(10);
+        posSlider.setEnabled(false);
         //posSlider.setEnabled(false);
         Log.i("PotentClient", "View initiated");
 
@@ -82,6 +83,7 @@ public class PotentClient extends ActionBarActivity implements OnSeekBarChangeLi
         if (requestCode == Constants.CONNECT_BT && resultCode == RESULT_OK) {
             Log.i("PotentClient", "Back after activityResult");
             connectButton.setText("CONNECTED");
+            posSlider.setEnabled(true);
 
         }
     }
