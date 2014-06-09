@@ -1,8 +1,15 @@
 package com.example.potent_client.app;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Handler;
+import android.os.IBinder;
+import android.os.Looper;
 import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,6 +24,8 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Toast;
 
 
+import java.nio.ByteBuffer;
+
 import static com.example.potent_client.app.R.layout;
 
 
@@ -24,23 +33,9 @@ public class PotentClient extends ActionBarActivity implements OnSeekBarChangeLi
     SeekBar posSlider;
     TextView posField;
     Button connectButton;
-    Bundle msgBundle;
-    String message;
+    BTService mBTService;
 
-    Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case Constants.MESSAGE_READ:
-                    msgBundle = msg.getData();
-                    message = (String)msg.obj;
-                    Log.i("Msg handler", "Got msg: " + message);
-                    break;
-                default:
-                    break;
-            }
-        }
-    };
+    boolean mBound;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,18 +51,39 @@ public class PotentClient extends ActionBarActivity implements OnSeekBarChangeLi
         //posSlider.setEnabled(false);
         Log.i("PotentClient", "View initiated");
 
+
         connectButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 Intent btIntent = new Intent(PotentClient.this, ConnectBluetooth.class);
-                //btIntent.putExtra("key", value); //Optional parameters
-                PotentClient.this.startActivity(btIntent);
+                PotentClient.this.startActivityForResult(btIntent, Constants.CONNECT_BT);
             }
         });
         Log.i("PotentClient", "Button initiated");
+    }
 
-        Intent intent = getIntent();
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Intent intent = new Intent(this, BTService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    }
 
+    @Override
+    protected void onStop(){
+        if (mBound) {
+            unbindService(mConnection);
+        }
+        super.onStop();
+    }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == Constants.CONNECT_BT && resultCode == RESULT_OK) {
+            Log.i("PotentClient", "Back after activityResult");
+            connectButton.setText("CONNECTED");
+
+        }
     }
 
     @Override
@@ -101,13 +117,34 @@ public class PotentClient extends ActionBarActivity implements OnSeekBarChangeLi
 
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
-        // Send position to other device
-        int duration = Toast.LENGTH_SHORT;
+        byte[] toSend = intToByte(seekBar.getProgress());
 
-        String text = "Sending position " + seekBar.getProgress();
+        if (mBTService == null || mBTService.connectThread == null ||
+                mBTService.connectThread.connectedThread == null)
+            return;
 
-        Toast toast = Toast.makeText(this, text, duration);
-        toast.show();
+        mBTService.connectThread.connectedThread.write(toSend);
     }
 
+    private byte[] intToByte(int i) {
+        return ByteBuffer.allocate(4).putInt(i).array();
+    }
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            BTService.LocalBinder binder = (BTService.LocalBinder) service;
+            mBTService = binder.getService();
+            mBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            Log.i("ServiceConnection", "unbinding");
+            mBound = false;
+        }
+    };
 }

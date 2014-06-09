@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.os.Handler;
+import android.os.Messenger;
 import android.os.ParcelUuid;
 import android.util.Log;
 import android.widget.Toast;
@@ -16,80 +17,50 @@ import java.util.UUID;
 /**
  * Created by jaap on 06.06.14.
  */
-public class ConnectThread extends Thread {
+public class ConnectThread extends Thread implements Runnable {
     private final BluetoothSocket serverSocket;
-    private final BluetoothDevice serverDevice;
     private final BluetoothAdapter btAdapter;
-    public Handler mHandler;
+    public ConnectedThread connectedThread;
 
 
-    public ConnectThread(BluetoothAdapter adapter, BluetoothDevice device, Handler handler) {
+    public ConnectThread(BluetoothAdapter adapter, BluetoothDevice device) {
         BluetoothSocket tmp = null;
-        serverDevice = device;
         btAdapter = adapter;
-        mHandler = handler;
 
-        listUuids();
-        // Get a BluetoothSocket to connect with the given BluetoothDevice
         try {
-            // MY_UUID is the app's UUID string, also used by the server code
-            //tmp = device.createRfcommSocketToServiceRecord(UUID.fromString(Constants.UUIDSTRING));
-            tmp = device.createRfcommSocketToServiceRecord(serverDevice.getUuids()[1].getUui‌​d());
-            Log.i("ConnectThread", "Create RF done");
+            tmp = device.createRfcommSocketToServiceRecord(UUID.fromString(Constants.UUIDSTRING));
         } catch (Exception e) {
-            Log.i("ConnectThread", "Create RF failed (wrong UUID?)");
             this.cancel();
         }
         serverSocket = tmp;
-        run();
     }
 
     public void run() {
         Log.i("ConnectThread", "Running started");
-        // Cancel discovery because it will slow down the connection
         btAdapter.cancelDiscovery();
 
-
         try {
-            // Connect the device through the socket. This will block
-            // until it succeeds or throws an exception
-            Log.i("ConnectThread", "before connecting socket");
             serverSocket.connect();
             Log.i("ConnectThread", "connect to serverSocket done");
         } catch (IOException connectException) {
-            // Unable to connect; close the socket and get out
             Log.i("Connect Thread Exception", connectException.getMessage() + " ");
             try {
                 Log.i("Connect Thread", "Connecting failed");
                 serverSocket.close();
-            } catch (IOException closeException) {
-            }
-            //this.start(); // STart over
+            } catch (IOException closeException) { }
             return;
         }
 
-        // Do work to manage the connection (in a separate thread)
-        new ConnectedThread(serverSocket, mHandler);
+        connectedThread = new ConnectedThread(serverSocket);
+        connectedThread.start();
+
     }
 
     public void cancel() {
         if (serverSocket != null) {
             try {
                 serverSocket.close();
-            } catch (IOException e) {
-            }
+            } catch (IOException e) { }
         }
-    }
-
-    private void listUuids() {
-        int i = 0;
-        ParcelUuid[] uuids;
-
-        uuids = serverDevice.getUuids();
-
-        for (i = 0; i < uuids.length; i ++) {
-            Log.i("UUID LIST", "Found no " + i + ": " + uuids[i].getUui‌​d().toString());
-        }
-
     }
 }

@@ -7,6 +7,7 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+        <service android:name=".BTService" />
         <activity
             android:name=".PotentClient"
             android:label="@string/app_name" >
@@ -20,6 +21,7 @@
         <activity
             android:label="@string/app_name"
             android:name=".ConnectBluetooth"/>
+
     </application>
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
