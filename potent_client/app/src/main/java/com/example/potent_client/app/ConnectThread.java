@@ -3,25 +3,17 @@ package com.example.potent_client.app;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
-import android.content.Context;
-import android.os.Handler;
-import android.os.Messenger;
-import android.os.ParcelUuid;
 import android.util.Log;
-import android.widget.Toast;
-
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.UUID;
 
 /**
  * Created by jaap on 06.06.14.
  */
 public class ConnectThread extends Thread implements Runnable {
-    private final BluetoothSocket serverSocket;
-    private final BluetoothAdapter btAdapter;
-    public ConnectedThread connectedThread;
-
+    private final BluetoothSocket   serverSocket;
+    private final BluetoothAdapter  btAdapter;
+    public ConnectedThread          connectedThread;
 
     public ConnectThread(BluetoothAdapter adapter, BluetoothDevice device) {
         BluetoothSocket tmp = null;
@@ -36,16 +28,13 @@ public class ConnectThread extends Thread implements Runnable {
     }
 
     public void run() {
-        Log.i("ConnectThread", "Running started");
         btAdapter.cancelDiscovery();
 
         try {
             serverSocket.connect();
-            Log.i("ConnectThread", "connect to serverSocket done");
         } catch (IOException connectException) {
             Log.i("Connect Thread Exception", connectException.getMessage() + " ");
             try {
-                Log.i("Connect Thread", "Connecting failed");
                 serverSocket.close();
             } catch (IOException closeException) { }
             return;
@@ -53,7 +42,6 @@ public class ConnectThread extends Thread implements Runnable {
 
         connectedThread = new ConnectedThread(serverSocket);
         connectedThread.start();
-
     }
 
     public void cancel() {

@@ -4,12 +4,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Looper;
-import android.os.Message;
-import android.os.Messenger;
-import android.os.RemoteException;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,27 +16,22 @@ import android.view.View.OnClickListener;
 import android.widget.TextView;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
-import android.widget.Toast;
-
-
 import java.nio.ByteBuffer;
 
 import static com.example.potent_client.app.R.layout;
 
 
 public class PotentClient extends ActionBarActivity implements OnSeekBarChangeListener {
-    SeekBar posSlider;
-    TextView posField;
-    Button connectButton;
-    BTService mBTService;
-
-    boolean mBound;
+    SeekBar     posSlider;
+    TextView    posField;
+    Button      connectButton;
+    BTService   mBTService;
+    boolean     mBound;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(layout.activity_potent_client);
-        Log.i("PotentClient", "startup");
 
         connectButton = (Button)findViewById(R.id.connect);
         posField = (TextView)findViewById(R.id.sliderPosition);
@@ -49,9 +39,6 @@ public class PotentClient extends ActionBarActivity implements OnSeekBarChangeLi
         posSlider.setOnSeekBarChangeListener(this);
         posSlider.setMax(10);
         posSlider.setEnabled(false);
-        //posSlider.setEnabled(false);
-        Log.i("PotentClient", "View initiated");
-
 
         connectButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
@@ -59,7 +46,6 @@ public class PotentClient extends ActionBarActivity implements OnSeekBarChangeLi
                 PotentClient.this.startActivityForResult(btIntent, Constants.CONNECT_BT);
             }
         });
-        Log.i("PotentClient", "Button initiated");
     }
 
     @Override
@@ -81,16 +67,13 @@ public class PotentClient extends ActionBarActivity implements OnSeekBarChangeLi
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == Constants.CONNECT_BT && resultCode == RESULT_OK) {
-            Log.i("PotentClient", "Back after activityResult");
             connectButton.setText("CONNECTED");
             posSlider.setEnabled(true);
-
         }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.potent_client, menu);
         return true;
     }
@@ -133,7 +116,6 @@ public class PotentClient extends ActionBarActivity implements OnSeekBarChangeLi
     }
 
     private ServiceConnection mConnection = new ServiceConnection() {
-
         @Override
         public void onServiceConnected(ComponentName className,
                                        IBinder service) {
